@@ -1,0 +1,52 @@
+# ==========================================
+# GHDL & Simulation Outputs
+# ==========================================
+# GHDL compiler work directory
+work/
+# Simulation waveforms
+*.vcd
+*.ghw
+# Object files and compiler intermediate files
+*.o
+e~*
+# Testbench executables (if compiled standalone)
+tb_*
+*.cf
+
+# ==========================================
+# Intel Quartus Prime Outputs
+# ==========================================
+# Quartus databases
+db/
+incremental_db/
+greybox_tmp/
+hc_output/
+hps_isw_handoff/
+sys_description/
+
+# Synthesis/Compilation report and log files
+*.rpt
+*.summary
+*.smsg
+*.jdi
+*.pin
+*.done
+*.qws
+*.bak
+
+# FPGA Programming / Output files (usually inside output_files/)
+output_files/
+*.sof
+*.pof
+*.ekp
+*.jbc
+
+# ==========================================
+# OS and Editor Temp Files
+# ==========================================
+.DS_Store
+Thumbs.db
+*~
+*.swp
+.vscode/
+.idea/
