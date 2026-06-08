@@ -1,0 +1,26 @@
+\section{Resultados de Simulación}
+
+Para validar el correcto funcionamiento de la arquitectura RTL del sistema de riego automático, se llevó a cabo un plan de verificación basado en simulación funcional del testbench (\textit{Functional Simulation}) utilizando GHDL y la visualización de formas de onda en GTKWave.
+
+Se ejecutó un banco de pruebas (\texttt{tb\_sistema\_riego.vhd}) diseñado para inyectar estímulos correspondientes a los sensores ambientales a lo largo de un intervalo de tiempo de 350 $\mu$s. A continuación se detallan los escenarios validados en simulación:
+
+\begin{enumerate}
+	\item \textbf{Escenario 1: Suelo Seco (Inicio de Riego):} El simulador establece una lectura de humedad de 800 (suelo seco) con radiación UV normal (300). La FSM responde activando la bomba de agua de manera inmediata al salir del estado de monitoreo.
+	\item \textbf{Escenario 2: Suelo Humedecido (Fin de Riego):} El valor de humedad analizado cambia a 350 (suelo húmedo). La bomba de agua se desactiva y el sistema entra en el estado de reposo temporal (\textit{cooldown}).
+	\item \textbf{Escenario 3: Temperatura Elevada (Apertura de Compuerta):} La temperatura del sensor sube a 280 (sobrecalentamiento). La FSM detecta la condición y activa la apertura de la compuerta térmica de ventilación. Se verifica la generación del tren de pulsos PWM con el barrido del ciclo de trabajo.
+	\item \textbf{Escenario 4: Temperatura Estabilizada (Cierre de Compuerta):} La temperatura desciende a 190. La compuerta se cierra de manera progresiva y el sistema retorna a monitoreo previo paso por \textit{cooldown}.
+	\item \textbf{Escenario 5: Radiación UV Extrema con Suelo Seco (Bloqueo de Riego):} Se simula suelo seco (850) pero con radiación UV extrema (700). Tal como dicta el diseño crítico, el riego permanece bloqueado para evitar la evaporación ineficiente del agua.
+	\item \textbf{Escenario 6: Descenso de Radiación (Riego Habilitado):} Al caer el sol, la radiación solar desciende a 350. Al no existir bloqueo por UV, el riego se enciende automáticamente.
+	\item \textbf{Escenario 7: Temporizador de Seguridad (Timeout):} Se fuerza un riego continuo sin que la humedad descienda. Tras expirar el tiempo de seguridad asignado (10 segundos simulados equivalentemente), la bomba de agua se apaga de manera forzada por hardware.
+\end{enumerate}
+
+Las capturas de pantalla de las formas de onda correspondientes a la simulación con GTKWave se pueden apreciar a continuación:
+
+\placeholderfigure{Formas de onda en GTKWave para el ciclo de Riego (Activación y desactivación por humedad/UV).}{figures/captura_simulacion_riego.png}
+\label{fig:captura_simulacion_riego}
+
+\placeholderfigure{Formas de onda en GTKWave para el control térmico PWM (Barrido progresivo).}{figures/captura_simulacion_ventilacion.png}
+\label{fig:captura_simulacion_ventilacion}
+
+\placeholderfigure{Formas de onda en GTKWave correspondientes a la expiración por Timeout de seguridad.}{figures/captura_simulacion_timeout.png}
+\label{fig:captura_simulacion_timeout}

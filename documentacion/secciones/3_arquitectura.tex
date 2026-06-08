@@ -22,7 +22,8 @@ Módulo netamente combinacional y de registros simples que compara los valores d
 \end{itemize}
 
 \subsubsection{4. PWM Controller (\texttt{pwm\_controller.vhd})} [cite: 28]
-Generador de modulación por ancho de pulso para el servomotor[cite: 28]. Genera una señal digital a una frecuencia exacta de 50 Hz[cite: 29]. Implementa internamente contadores que regulan el ancho de pulso en un rango de 1 ms a 2 ms, y añade un módulo de barrido progresivo para transicionar suavemente entre las posiciones de apertura y cierre de la compuerta térmica de ventilación[cite: 30].
+Generador de modulación por ancho de pulso para el servomotor de rotación continua (360°)[cite: 28]. Genera una señal digital a una frecuencia exacta de 50 Hz[cite: 29]. Para garantizar compatibilidad con servos de 360°, el controlador emite un ancho de pulso constante de 1.5 ms en reposo (compuerta cerrada) para frenar y mantener el motor detenido, mientras que en estado activo (compuerta abierta) genera un barrido progresivo entre 1.0 ms y 2.0 ms, logrando que el servo gire y cambie de sentido cíclicamente para actuar como extractor de aire en la ventilación[cite: 30].
+
 
 \subsubsection{5. FSM Central (\texttt{fsm\_central.vhd})} [cite: 31]
 El cerebro del sistema de control[cite: 31]. Recibe los estados de alarma de los sensores y determina la secuencia de estados lógicos para activar o desactivar la bomba de agua local y mandar las órdenes de apertura al servomotor de ventilación[cite: 31].

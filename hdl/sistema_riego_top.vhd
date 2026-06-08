@@ -153,10 +153,11 @@ begin
     -- Instantiate PWM Controller
     u_pwm_controller : entity work.pwm_controller
         generic map (
-            CLK_FREQ     => CLK_FREQ,
-            PWM_FREQ     => 50,
-            PULSE_MIN_US => 1000,
-            PULSE_MAX_US => 2000
+            CLK_FREQ      => CLK_FREQ,
+            PWM_FREQ      => 50,
+            PULSE_MIN_US  => 1000,
+            PULSE_MAX_US  => 2000,
+            PULSE_STOP_US => 1500
         )
         port map (
             clk       => clk,

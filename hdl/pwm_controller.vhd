@@ -6,8 +6,9 @@ entity pwm_controller is
     generic (
         CLK_FREQ      : integer := 50000000; -- 50 MHz
         PWM_FREQ      : integer := 50;       -- 50 Hz (20 ms period)
-        PULSE_MIN_US  : integer := 1000;     -- 1.0 ms pulse (e.g. 0 degrees / closed compuerta)
-        PULSE_MAX_US  : integer := 2000      -- 2.0 ms pulse (e.g. 180 degrees / open compuerta)
+        PULSE_MIN_US  : integer := 1000;     -- 1.0 ms pulse (e.g. max speed counter-clockwise)
+        PULSE_MAX_US  : integer := 2000;     -- 2.0 ms pulse (e.g. max speed clockwise)
+        PULSE_STOP_US : integer := 1500      -- 1.5 ms pulse (stop / idle state for 360 servo)
     );
     port (
         clk      : in  std_logic;
@@ -26,9 +27,10 @@ architecture rtl of pwm_controller is
     constant PERIOD_CYCLES    : integer := CLK_FREQ / PWM_FREQ;
     constant PULSE_MIN_CYCLES : integer := ((CLK_FREQ / 1000) * PULSE_MIN_US) / 1000;
     constant PULSE_MAX_CYCLES : integer := ((CLK_FREQ / 1000) * PULSE_MAX_US) / 1000;
+    constant PULSE_STOP_CYCLES : integer := ((CLK_FREQ / 1000) * PULSE_STOP_US) / 1000;
     
     signal counter      : integer range 0 to PERIOD_CYCLES := 0;
-    signal pulse_width  : integer range 0 to PERIOD_CYCLES := PULSE_MIN_CYCLES;
+    signal pulse_width  : integer range 0 to PERIOD_CYCLES := PULSE_STOP_CYCLES;
     
 begin
     -- Determine target pulse width based on control signal with dynamic sweeping
@@ -37,7 +39,7 @@ begin
         variable sweep_up    : boolean := true;
     begin
         if rst = '1' then
-            pulse_width <= PULSE_MIN_CYCLES;
+            pulse_width <= PULSE_STOP_CYCLES;
             sweep_up    := true;
         elsif rising_edge(clk) then
             if gate_open = '1' then
@@ -68,8 +70,8 @@ begin
                     end if;
                 end if;
             else
-                -- Return to closed position
-                pulse_width <= PULSE_MIN_CYCLES;
+                -- Return to stopped position (1.5 ms for 360-degree servo)
+                pulse_width <= PULSE_STOP_CYCLES;
                 sweep_up    := true;
             end if;
         end if;
