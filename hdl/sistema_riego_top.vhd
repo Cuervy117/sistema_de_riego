@@ -24,7 +24,8 @@ entity sistema_riego_top is
     );
     port (
         clk             : in  std_logic;
-        reset_n         : in  std_logic; -- Active-low async reset from push-button
+        reset_n         : in  std_logic; -- Active-low async reset from push-button (KEY[0])
+        sw_bomba_n      : in  std_logic; -- Active-low manual override for water pump (KEY[1])
         
         -- MCP3008 SPI Interface
         adc_sclk        : out std_logic;
@@ -88,10 +89,10 @@ begin
     rst <= rst_sync_reg2;
     
     -- Visual Outputs Mapping (Inverted for physical Active-Low LEDs)
-    led_bomba      <= not bomba_on;
+    led_bomba      <= not (bomba_on or (not sw_bomba_n));
     led_uv_warning <= not uv_extrema;
     led_state      <= not fsm_state;
-    bomba          <= bomba_on; -- Actuator remains Active-High (MOSFET)
+    bomba          <= bomba_on or (not sw_bomba_n); -- Actuator is active-high, active if FSM or button pressed
 
     u_spi_master : entity work.spi_master
         generic map (

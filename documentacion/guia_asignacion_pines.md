@@ -16,6 +16,7 @@ Los periféricos onboard en esta tarjeta utilizan lógica **Active-Low** (se act
 | :--- | :--- | :--- | :--- |
 | `clk` | Oscilador de 50 MHz | **PIN_23** | Reloj del sistema. |
 | `reset_n` | Botón `KEY[0]` (S1) | **PIN_88** | Entrada síncrona. Presionado es `'0'` (Reset). |
+| `sw_bomba_n` | Botón `KEY[1]` (S2) | **PIN_89** | Interruptor manual bomba. Presionado es `'0'` (ON). |
 | `led_state[0]` | `LEDG[0]` (LED D1) | **PIN_87** | Bit 0 del estado (Verde). Se ilumina en `'0'`. |
 | `led_state[1]` | `LEDG[1]` (LED D2) | **PIN_86** | Bit 1 del estado (Verde). Se ilumina en `'0'`. |
 | `led_state[2]` | `LEDG[2]` (LED D3) | **PIN_85** | Bit 2 del estado (Verde). Se ilumina en `'0'`. |
@@ -53,9 +54,10 @@ Abre el archivo de configuración de Quartus de tu proyecto (con extensión `.qs
 # Restricciones de Pines - Proyecto Riego (RZ-EasyFPGA A2.2)
 # ==============================================================================
 
-# Configuración del Reloj y Reset
+# Configuración del Reloj, Reset y Control Manual
 set_location_assignment PIN_23 -to clk
 set_location_assignment PIN_88 -to reset_n
+set_location_assignment PIN_89 -to sw_bomba_n
 
 # Interfaz SPI del ADC MCP3008
 set_location_assignment PIN_112 -to adc_sclk

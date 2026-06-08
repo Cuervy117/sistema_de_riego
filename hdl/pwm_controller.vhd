@@ -33,46 +33,16 @@ architecture rtl of pwm_controller is
     signal pulse_width  : integer range 0 to PERIOD_CYCLES := PULSE_STOP_CYCLES;
     
 begin
-    -- Determine target pulse width based on control signal with dynamic sweeping
+    -- Determine target pulse width: constant 1.0 ms (full speed) when active, 1.5 ms (stop) when idle
     process(clk, rst)
-        variable step        : integer := 0;
-        variable sweep_up    : boolean := true;
     begin
         if rst = '1' then
             pulse_width <= PULSE_STOP_CYCLES;
-            sweep_up    := true;
         elsif rising_edge(clk) then
             if gate_open = '1' then
-                -- Update pulse width at the end of each PWM period (when counter rolls over)
-                if counter = PERIOD_CYCLES - 1 then
-                    -- Calculate step size so a full sweep (min to max) takes ~1 second.
-                    -- 1 second contains PWM_FREQ cycles, so step = (max - min) / PWM_FREQ.
-                    -- Ensure step is at least 1 cycle.
-                    step := (PULSE_MAX_CYCLES - PULSE_MIN_CYCLES) / PWM_FREQ;
-                    if step = 0 then
-                        step := 1;
-                    end if;
-                    
-                    if sweep_up then
-                        if pulse_width + step >= PULSE_MAX_CYCLES then
-                            pulse_width <= PULSE_MAX_CYCLES;
-                            sweep_up    := false;
-                        else
-                            pulse_width <= pulse_width + step;
-                        end if;
-                    else
-                        if pulse_width - step <= PULSE_MIN_CYCLES then
-                            pulse_width <= PULSE_MIN_CYCLES;
-                            sweep_up    := true;
-                        else
-                            pulse_width <= pulse_width - step;
-                        end if;
-                    end if;
-                end if;
+                pulse_width <= PULSE_MIN_CYCLES; -- Spin continuously at constant speed (fan mode)
             else
-                -- Return to stopped position (1.5 ms for 360-degree servo)
-                pulse_width <= PULSE_STOP_CYCLES;
-                sweep_up    := true;
+                pulse_width <= PULSE_STOP_CYCLES; -- Stop the fan
             end if;
         end if;
     end process;
