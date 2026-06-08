@@ -35,3 +35,5 @@ Para evitar problemas de metaestabilidad o de carreras críticas en el paso de i
 	\item \textbf{Señales Strobe:} Las señales de activación e indicadores de datos no son niveles continuos inestables. En su lugar, se diseñan circuitos que generan un pulso de **un único ciclo de reloj de sistema (20 ns)** cuando se detecta un flanco de cambio de estado. Esto permite a la FSM central registrar eventos instantáneos de forma síncrona sin bloquearse.
 	\item \textbf{Histéresis en Comparadores:} Las alarmas de los sensores no oscilan ante variaciones de ruido analógico gracias a que el módulo \texttt{threshold\_comparator} cuenta con ventanas de comparación de doble umbral (histéresis). Por ejemplo, la alarma de temperatura se enciende al sobrepasar los 25°C y se apaga únicamente cuando la lectura desciende por debajo de los 20°C.
 \end{itemize}
+
+\input{secciones/diagrama_electrico}

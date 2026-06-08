@@ -1,0 +1,75 @@
+\subsection{Diagrama de Conexiones Eléctricas}
+
+Para detallar la interconexión física entre la FPGA, los sensores analógicos y los actuadores mecánicos/hidráulicos, se presenta el esquema eléctrico del sistema de riego automático en la Figura~\ref{fig:diagrama_electrico}.
+
+\begin{figure}[htbp]
+    \centering
+    \begin{circuitikz}[scale=0.85, transform shape]
+        % FPGA Block
+        \draw[thick, fill=blue!5] (0,-1.5) rectangle (4.5, 10.5);
+        \node[align=center, font=\bfseries] at (2.2, 5.0) {FPGA\\Cyclone IV\\(RZ-EasyFPGA)};
+        
+        % FPGA Pins
+        \node[left, font=\small\ttfamily] at (4.5, 9.5) {PIN\_113 (CS\_n)};
+        \node[left, font=\small\ttfamily] at (4.5, 8.8) {PIN\_112 (SCLK)};
+        \node[left, font=\small\ttfamily] at (4.5, 8.1) {PIN\_114 (MOSI)};
+        \node[left, font=\small\ttfamily] at (4.5, 7.4) {PIN\_115 (MISO)};
+        
+        \node[left, font=\small\ttfamily] at (4.5, 3.0) {PIN\_119 (BOMBA)};
+        \node[left, font=\small\ttfamily] at (4.5, 1.0) {PIN\_120 (SERVO)};
+        
+        % ADC MCP3008 Block
+        \draw[thick, fill=yellow!10] (8.0, 7.0) rectangle (12.0, 10.0);
+        \node[align=center, font=\bfseries] at (9.5, 8.5) {ADC\\MCP3008};
+        
+        % ADC Pin Labels
+        \node[right, font=\small\ttfamily] at (8.0, 9.5) {CS};
+        \node[right, font=\small\ttfamily] at (8.0, 8.8) {CLK};
+        \node[right, font=\small\ttfamily] at (8.0, 8.1) {DIN};
+        \node[right, font=\small\ttfamily] at (8.0, 7.4) {DOUT};
+        
+        \node[left, font=\small\ttfamily] at (11.0, 9.5) {CH0};
+        \node[left, font=\small\ttfamily] at (11.0, 8.8) {CH1};
+        \node[left, font=\small\ttfamily] at (11.0, 8.1) {CH2};
+        
+        % Connections FPGA to ADC
+        \draw (3.5, 9.5) -- (8.0, 9.5);
+        \draw (3.5, 8.8) -- (8.0, 8.8);
+        \draw (3.5, 8.1) -- (8.0, 8.1);
+        \draw (8.0, 7.4) -- (3.5, 7.4);
+        
+        % ADC Inputs (CH0, CH1, CH2)
+        \draw (11.0, 9.5) -- ++(1.5, 0) node[right, font=\small] {CH0 (Humedad)};
+        \draw (11.0, 8.8) -- ++(1.5, 0) node[right, font=\small] {CH1 (Temperatura)};
+        \draw (11.0, 8.1) -- ++(1.5, 0) node[right, font=\small] {CH2 (UV)};
+        
+        % Pump Circuit (MOSFET IRLZ44N)
+        % Gate circuit
+        \draw (3.5, 3.0) to[R, l=220\,\text{$\Omega$}] (5.5, 3.0) node[circ] (gate) {};
+        \draw (gate) to[R, l=10\,\text{k$\Omega$}] (5.5, 1.5) node[ground] {};
+        
+        % MOSFET
+        \draw (7.5, 3.0) node[nmos] (mosfet) {};
+        \draw (mosfet) node[right=0.4cm, yshift=0.1cm, font=\small\bfseries] {IRLZ44N};
+        \draw (gate) -- (mosfet.G);
+        \draw (mosfet.S) node[ground] {};
+        
+        % Pump and Flyback Diode
+        \draw (mosfet.D) -- (7.5, 4.5) node[circ] (drain_conn) {};
+        \draw (drain_conn) to[D, l=1N4007] (7.5, 6.0) node[circ] (vcc_conn) {} to[vcc] ++(0,0.5) node[above] {VCC\_ext};
+        
+        % Motor (Bomba) representation
+        \node[draw, circle, minimum size=0.8cm, fill=cyan!10] (motor) at (9.5, 5.25) {\textbf{M}};
+        \node[right=0.2cm] at (motor.east) {Bomba};
+        \draw (drain_conn) -| (motor.south);
+        \draw (vcc_conn) -| (motor.north);
+        
+        % Servo Circuit
+        \draw (3.5, 1.0) to[R, l=220\,\text{$\Omega$}] (6.5, 1.0) node[circ] (servo_sig) {};
+        \draw (servo_sig) to[R, l=10\,\text{k$\Omega$}] (6.5, -0.5) node[ground] {};
+        \draw (servo_sig) -- (8.5, 1.0) node[right, draw, rectangle, fill=orange!10, minimum height=1.2cm, minimum width=2.0cm, align=center, font=\small, anchor=west] {Servo SG90\\ VCC = 5V\_ext\\ GND = GND};
+        
+    \end{circuitikz}
+    \caption{Diagrama de Conexiones Eléctricas del Sistema de Riego.}
+    \label{fig:diagrama_electrico}
+\end{figure}
