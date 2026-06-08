@@ -1,59 +1,46 @@
-\section{Verificación y Resultados}
+\section{Verificación y Resultados} [cite: 58]
 
-Para validar el correcto funcionamiento de la arquitectura RTL del sistema de riego automático, se llevó a cabo un plan de verificación en dos etapas: simulación funcional del testbench (\textit{Functional Simulation}) utilizando GHDL y pruebas físicas sobre la tarjeta de desarrollo Cyclone V.
+Para validar el correcto funcionamiento de la arquitectura RTL del sistema de riego automático, se llevó a cabo un plan de verificación en dos etapas: simulación funcional del testbench (\textit{Functional Simulation}) utilizando GHDL y pruebas físicas sobre la tarjeta de desarrollo Cyclone IV[cite: 58].
 
-\subsection{Simulación Funcional en Hardware (Testbench)}
-Se ejecutó un banco de pruebas (\texttt{tb\_sistema\_riego.vhd}) diseñado para inyectar estímulos correspondientes a los sensores ambientales a lo largo de un intervalo de tiempo de 350 $\mu$s. A continuación se detallan los escenarios validados en simulación:
+\subsection{Simulación Funcional en Hardware (Testbench)} [cite: 58]
+Se ejecutó un banco de pruebas (\texttt{tb\_sistema\_riego.vhd}) diseñado para inyectar estímulos correspondientes a los sensores ambientales a lo largo de un intervalo de tiempo de 350 $\mu$s[cite: 58]. A continuación se detallan los escenarios validados en simulación: [cite: 59]
 
 \begin{enumerate}
-	\item \textbf{Escenario 1: Suelo Seco (Inicio de Riego):}
-	El simulador establece una lectura de humedad de 800 (suelo seco) con radiación UV normal (300). La FSM responde activando la bomba de agua de manera inmediata al salir del estado de monitoreo.
-	
-	\item \textbf{Escenario 2: Suelo Humedecido (Fin de Riego):}
-	El valor de humedad analizado cambia a 350 (suelo húmedo). La bomba de agua se desactiva y el sistema entra en el estado de reposo temporal (\textit{cooldown}).
-	
-	\item \textbf{Escenario 3: Temperatura Elevada (Apertura de Compuerta):}
-	La temperatura del sensor sube a 280 (sobrecalentamiento). La FSM detecta la condición y activa la apertura de la compuerta térmica de ventilación. Se verifica la generación del tren de pulsos PWM con el barrido del ciclo de trabajo.
-
-	\item \textbf{Escenario 4: Temperatura Estabilizada (Cierre de Compuerta):}
-	La temperatura desciende a 190. La compuerta se cierra de manera progresiva y el sistema retorna a monitoreo previo paso por \textit{cooldown}.
-
-	\item \textbf{Escenario 5: Radiación UV Extrema con Suelo Seco (Bloqueo de Riego):}
-	Se simula suelo seco (850) pero con radiación UV extrema (700). Tal como dicta el diseño crítico, el riego permanece bloqueado para evitar la evaporación ineficiente del agua.
-
-	\item \textbf{Escenario 6: Descenso de Radiación (Riego Habilitado):}
-	Al caer el sol, la radiación solar desciende a 350. Al no existir bloqueo por UV, el riego se enciende automáticamente.
-
-	\item \textbf{Escenario 7: Temporizador de Seguridad (Timeout):}
-	Se fuerza un riego continuo sin que la humedad descienda. Tras expirar el tiempo de seguridad asignado (10 segundos simulados equivalentemente), la bomba de agua se apaga de manera forzada por hardware.
+	\item \textbf{Escenario 1: Suelo Seco (Inicio de Riego):} El simulador establece una lectura de humedad de 800 (suelo seco) con radiación UV normal (300)[cite: 59]. La FSM responde activando la bomba de agua de manera inmediata al salir del estado de monitoreo[cite: 60].
+	\item \textbf{Escenario 2: Suelo Humedecido (Fin de Riego):} El valor de humedad analizado cambia a 350 (suelo húmedo)[cite: 61]. La bomba de agua se desactiva y el sistema entra en el estado de reposo temporal (\textit{cooldown})[cite: 62].
+	\item \textbf{Escenario 3: Temperatura Elevada (Apertura de Compuerta):} La temperatura del sensor sube a 280 (sobrecalentamiento)[cite: 63]. La FSM detecta la condición y activa la apertura de la compuerta térmica de ventilación[cite: 64]. Se verifica la generación del tren de pulsos PWM con el barrido del ciclo de trabajo[cite: 65].
+	\item \textbf{Escenario 4: Temperatura Estabilizada (Cierre de Compuerta):} La temperatura desciende a 190[cite: 66]. La compuerta se cierra de manera progresiva y el sistema retorna a monitoreo previo paso por \textit{cooldown}[cite: 66].
+	\item \textbf{Escenario 5: Radiación UV Extrema con Suelo Seco (Bloqueo de Riego):} Se simula suelo seco (850) pero con radiación UV extrema (700)[cite: 67]. Tal como dicta el diseño crítico, el riego permanece bloqueado para evitar la evaporación ineficiente del agua[cite: 68].
+	\item \textbf{Escenario 6: Descenso de Radiación (Riego Habilitado):} Al caer el sol, la radiación solar desciende a 350[cite: 69]. Al no existir bloqueo por UV, el riego se enciende automáticamente[cite: 69].
+	\item \textbf{Escenario 7: Temporizador de Seguridad (Timeout):} Se fuerza un riego continuo sin que la humedad descienda[cite: 70]. Tras expirar el tiempo de seguridad asignado (10 segundos simulados equivalentemente), la bomba de agua se apaga de manera forzada por hardware[cite: 71].
 \end{enumerate}
 
-Las capturas de pantalla de las formas de onda correspondientes a la simulación con GTKWave se pueden apreciar a continuación:
+Las capturas de pantalla de las formas de onda correspondientes a la simulación con GTKWave se pueden apreciar a continuación: [cite: 72]
 
-\placeholderfigure{Formas de onda en GTKWave para el ciclo de Riego (Activación y desactivación por humedad/UV).}{figures/captura_simulacion_riego.png}
-\label{fig:captura_simulacion_riego}
+\placeholderfigure{Formas de onda en GTKWave para el ciclo de Riego (Activación y desactivación por humedad/UV).}{figures/captura_simulacion_riego.png} [cite: 72]
+\label{fig:captura_simulacion_riego} [cite: 72]
 
-\placeholderfigure{Formas de onda en GTKWave para el control térmico PWM (Barrido progresivo).}{figures/captura_simulacion_ventilacion.png}
-\label{fig:captura_simulacion_ventilacion}
+\placeholderfigure{Formas de onda en GTKWave para el control térmico PWM (Barrido progresivo).}{figures/captura_simulacion_ventilacion.png} [cite: 72]
+\label{fig:captura_simulacion_ventilacion} [cite: 72]
 
-\placeholderfigure{Formas de onda en GTKWave correspondientes a la expiración por Timeout de seguridad.}{figures/captura_simulacion_timeout.png}
-\label{fig:captura_simulacion_timeout}
+\placeholderfigure{Formas de onda en GTKWave correspondientes a la expiración por Timeout de seguridad.}{figures/captura_simulacion_timeout.png} [cite: 72]
+\label{fig:captura_simulacion_timeout} [cite: 72]
 
 
-\subsection{Implementación Física y Pruebas en Laboratorio}
-Una vez validado el diseño lógico, se cargó el archivo de programación al chip FPGA Cyclone V de la placa de desarrollo. Las interconexiones en el circuito de pruebas se validaron empleando instrumentación básica de laboratorio.
+\subsection{Implementación Física y Pruebas en Laboratorio} [cite: 72]
+Una vez validado el diseño lógico, se cargó el archivo de programación al chip FPGA Cyclone IV de la placa de desarrollo[cite: 72]. Las interconexiones en el circuito de pruebas se validaron empleando instrumentación básica de laboratorio[cite: 73].
 
-\placeholderfigure{Fotografía general del alambrado físico del sistema conectado a la FPGA Cyclone V y protoboard.}{imagenes/foto_alambrado_general.png}
-\label{fig:foto_alambrado_general}
+\placeholderfigure{Fotografía general del alambrado físico del sistema conectado a la FPGA Cyclone IV y protoboard.}{imagenes/foto_alambrado_general.png} [cite: 74]
+\label{fig:foto_alambrado_general} [cite: 74]
 
-\placeholderfigure{Fotografía a detalle de la etapa de aislamiento de potencia (optoacoplador PC817 y relevador para bomba).}{imagenes/foto_etapa_potencia.png}
-\label{fig:foto_etapa_potencia}
+\placeholderfigure{Fotografía a detalle de la etapa de aislamiento de potencia (optoacoplador PC817 y relevador para bomba).}{imagenes/foto_etapa_potencia.png} [cite: 74]
+\label{fig:foto_etapa_potencia} [cite: 74]
 
-\placeholderfigure{Fotografía a detalle de las conexiones del convertidor ADC MCP3008 con la red de sensores.}{imagenes/foto_sensor_adc.png}
-\label{fig:foto_sensor_adc}
+\placeholderfigure{Fotografía a detalle de las conexiones del convertidor ADC MCP3008 con la red de sensores.}{imagenes/foto_sensor_adc.png} [cite: 74]
+\label{fig:foto_sensor_adc} [cite: 74]
 
-\placeholderfigure{Medición en osciloscopio del ciclo de trabajo de la señal PWM generada para el servomotor (Posiciones de 1.0 ms y 2.0 ms).}{imagenes/medicion_osciloscopio_pwm.png}
-\label{fig:medicion_osciloscopio_pwm}
+\placeholderfigure{Medición en osciloscopio del ciclo de trabajo de la señal PWM generada para el servomotor (Posiciones de 1.0 ms y 2.0 ms).}{imagenes/medicion_osciloscopio_pwm.png} [cite: 74]
+\label{fig:medicion_osciloscopio_pwm} [cite: 74]
 
-\placeholderfigure{Captura del analizador lógico mostrando el protocolo SPI (lectura síncrona de los canales del ADC).}{imagenes/medicion_analizador_logico_spi.png}
-\label{fig:medicion_analizador_logico_spi}
+\placeholderfigure{Captura del analizador lógico mostrando el protocolo SPI (lectura síncrona de los canales del ADC).}{imagenes/medicion_analizador_logico_spi.png} [cite: 74]
+\label{fig:medicion_analizador_logico_spi} [cite: 74]
