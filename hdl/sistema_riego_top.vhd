@@ -70,6 +70,7 @@ architecture structural of sistema_riego_top is
     -- FSM controls
     signal bomba_on    : std_logic;
     signal gate_open   : std_logic;
+    signal fsm_state   : std_logic_vector(2 downto 0);
 
 begin
     -- 2-FF Reset Synchronizer (Active-low async to Active-high sync)
@@ -86,10 +87,11 @@ begin
     
     rst <= rst_sync_reg2;
     
-    -- Visual Outputs Mapping
-    led_bomba      <= bomba_on;
-    led_uv_warning <= uv_extrema;
-    bomba          <= bomba_on;
+    -- Visual Outputs Mapping (Inverted for physical Active-Low LEDs)
+    led_bomba      <= not bomba_on;
+    led_uv_warning <= not uv_extrema;
+    led_state      <= not fsm_state;
+    bomba          <= bomba_on; -- Actuator remains Active-High (MOSFET)
 
     u_spi_master : entity work.spi_master
         generic map (
@@ -181,7 +183,7 @@ begin
             uv_extrema   => uv_extrema,
             bomba_on     => bomba_on,
             gate_open    => gate_open,
-            state_debug  => led_state
+            state_debug  => fsm_state
         );
 
 end architecture structural;
