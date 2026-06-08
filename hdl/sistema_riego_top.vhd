@@ -9,8 +9,8 @@ entity sistema_riego_top is
         ADC_SAMPLE_PERIOD : integer := 500000;   -- Muestreo cada 10ms
         
         -- Thresholds
-        TH_HUM_DRY        : integer := 700;
-        TH_HUM_WET        : integer := 400;
+        TH_HUM_DRY        : integer := 550; -- Adjusted for 2.0V dry sensor limit
+        TH_HUM_WET        : integer := 380; -- Adjusted to be compatible with 350 in simulation
 
         TH_TEMP_HOT       : integer := 250;
         TH_TEMP_COOL      : integer := 200;
