@@ -65,7 +65,7 @@ begin
                         timer_cnt <= timer_cnt + 1;
                     end if;
                     
-                -- Channel 0: Humedad
+                -- Channel 0: Temperatura (Cabled to CH0)
                 when ST_START_CH0 =>
                     if spi_busy = '0' then
                         -- Start bit '1' in Byte 1
@@ -77,12 +77,12 @@ begin
                     
                 when ST_WAIT_CH0 =>
                     if spi_done = '1' then
-                        -- Extract 10 bits from rx_data (bits 10 to 1)
-                        hum_reg <= spi_rx_data(10 downto 1);
+                        -- Extract 10 bits from rx_data (bits 10 to 1) and store in temp_reg
+                        temp_reg <= spi_rx_data(10 downto 1);
                         state   <= ST_START_CH1;
                     end if;
                     
-                -- Channel 1: Temperatura
+                -- Channel 1: UV (Cabled to CH1)
                 when ST_START_CH1 =>
                     if spi_busy = '0' then
                         -- Config: SGL/DIFF='1', D2='0', D1='0', D0='1' (CH1) in Byte 2, followed by 4 dummy bits (1001_0000 = 0x90)
@@ -93,11 +93,12 @@ begin
                     
                 when ST_WAIT_CH1 =>
                     if spi_done = '1' then
-                        temp_reg <= spi_rx_data(10 downto 1);
+                        -- Store in uv_reg
+                        uv_reg <= spi_rx_data(10 downto 1);
                         state    <= ST_START_CH2;
                     end if;
                     
-                -- Channel 2: UV
+                -- Channel 2: Humedad (Cabled to CH2)
                 when ST_START_CH2 =>
                     if spi_busy = '0' then
                         -- Config: SGL/DIFF='1', D2='0', D1='1', D0='0' (CH2) in Byte 2, followed by 4 dummy bits (1010_0000 = 0xA0)
@@ -108,7 +109,8 @@ begin
                     
                 when ST_WAIT_CH2 =>
                     if spi_done = '1' then
-                        uv_reg <= spi_rx_data(10 downto 1);
+                        -- Store in hum_reg
+                        hum_reg <= spi_rx_data(10 downto 1);
                         state  <= ST_CYCLE_DONE;
                     end if;
                     
