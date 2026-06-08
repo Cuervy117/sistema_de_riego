@@ -12,8 +12,8 @@ entity sistema_riego_top is
         TH_HUM_DRY        : integer := 550; -- Adjusted for 2.0V dry sensor limit
         TH_HUM_WET        : integer := 380; -- Adjusted to be compatible with 350 in simulation
 
-        TH_TEMP_HOT       : integer := 250;
-        TH_TEMP_COOL      : integer := 200;
+        TH_TEMP_HOT       : integer := 210; -- Adjusted for 0.69V (214 digital) ambient trigger
+        TH_TEMP_COOL      : integer := 170; -- Adjusted for cooling down below 0.55V
         
         TH_UV_HIGH        : integer := 350; -- Adjusted for cell phone flashlight activation indoors
         TH_UV_NORMAL      : integer := 320; -- Adjusted for cell phone flashlight deactivation indoors
