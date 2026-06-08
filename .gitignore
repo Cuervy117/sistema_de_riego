@@ -42,6 +42,21 @@ output_files/
 *.jbc
 
 # ==========================================
+# LaTeX Compilation Outputs
+# ==========================================
+# Compiled PDF output
+documentacion/main.pdf
+
+# Temporary compile files (generated in multiple folders)
+*.aux
+*.log
+*.toc
+*.out
+*.synctex.gz
+*.fdb_latexmk
+*.fls
+
+# ==========================================
 # OS and Editor Temp Files
 # ==========================================
 .DS_Store

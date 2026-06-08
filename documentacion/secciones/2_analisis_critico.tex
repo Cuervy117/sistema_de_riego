@@ -1,0 +1,25 @@
+\section{Análisis Crítico y Desafíos de Hardware}
+
+La migración de un sistema de control embebido tradicional (desarrollado en microcontroladores como Arduino o ESP32) hacia una plataforma VLSI/FPGA basada en lógica programable pura impone desafíos específicos de diseño físico, eléctrico y lógico.
+
+\subsection{Naturaleza de las Señales (Analógico vs. Digital)}
+Los dispositivos de la familia Cyclone V operan de manera estrictamente digital en sus bloques de entrada/salida (I/O) a 3.3V. Dado que los sensores empleados (humedad, temperatura y radiación UV) devuelven voltajes analógicos proporcionales, se presenta el primer reto de interfaz:
+\begin{itemize}
+	\item \textbf{Solución implementada:} Integración de un convertidor analógico-digital externo (ADC) modelo \textbf{MCP3008}. Este dispositivo digitaliza las lecturas a una resolución de 10 bits y las envía a la FPGA empleando el protocolo serie síncrono \textbf{SPI}.
+	\item \textbf{Desafío lógico:} Desarrollar en hardware un controlador (driver) SPI maestro que module el reloj de transmisión (\textit{SCLK}), controle la selección del chip (\textit{CS}) y lea de manera secuencial los canales del ADC.
+\end{itemize}
+
+\subsection{Aislamiento Eléctrico y Etapa de Potencia}
+Los pines GPIO de la FPGA son sumamente sensibles a sobrecorrientes y ruidos inducidos. Operan a 3.3V con límites de corriente de pocos miliamperios (típicamente $\le 16$ mA por pin). Por otro lado, los actuadores como la bomba sumergible operan a 5V/12V y demandan corrientes transitorias altas (del orden de cientos de mA a Amperios):
+\begin{itemize}
+	\item \textbf{Aislamiento Óptico:} Se requiere el uso obligatorio de \textbf{optoacopladores} (como el PC817) para separar galvánicamente el dominio de bajo voltaje de la FPGA del dominio de potencia de los actuadores.
+	\item \textbf{Conmutación de Potencia:} Se implementa una placa de relés o transistores MOSFET de potencia (como el IRFZ44N) con diodos de protección \textit{flyback} en antiparalelo, previniendo que los picos inductivos generados por los motores dañen los pines de la FPGA.
+\end{itemize}
+
+\subsection{Control del Servomotor para la Compuerta de Ventilación}
+A diferencia de un ventilador de corriente directa de velocidad constante, el control térmico de este invernadero utiliza un servomotor para mover físicamente una compuerta o persiana de ventilación.
+\begin{itemize}
+	\item Un servomotor estándar requiere una modulación de ancho de pulso (\textbf{PWM}) con un período fijo de \textbf{20 ms} (frecuencia de 50 Hz).
+	\item El ancho del pulso determina la posición angular de la compuerta: un pulso de \textbf{1.0 ms} representa la posición cerrada (mínima velocidad/ángulo de reposo) y un pulso de \textbf{2.0 ms} representa la apertura máxima.
+	\item \textbf{Control de Barrido Dinámico:} Para evitar transiciones bruscas en la compuerta mecánica, el sistema implementa un algoritmo de barrido dinámico (\textit{sweeping}) que incrementa o decrementa gradualmente el ciclo de trabajo en el rango de 1.0 ms a 2.0 ms en lugar de hacer saltos instantáneos, reduciendo el esfuerzo mecánico sobre el servo.
+\end{itemize}

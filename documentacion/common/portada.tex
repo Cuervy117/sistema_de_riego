@@ -1,0 +1,75 @@
+% common/portada.tex
+\thispagestyle{empty} 
+
+\begin{center}
+	\vspace{0.8cm}
+	
+	% --- Logo Header ---
+	\begin{minipage}{0.15\textwidth}
+		\centering
+		% Extension removed so it finds UNAM.pdf automatically
+		\includegraphics[width=\textwidth]{UNAM} 
+	\end{minipage}
+	\hfill
+	\begin{minipage}{0.65\textwidth}
+		\centering
+		{\color{black}\fontsize{16}{18}\selectfont
+			\textbf{UNIVERSIDAD NACIONAL AUTÓNOMA DE MÉXICO} \\
+			\vspace{0.3cm}
+			\textbf{FACULTAD DE INGENIERÍA} \\
+			\vspace{0.3cm}
+			\textbf{DISEÑO DIGITAL VLSI} \\
+			\vspace{0.3cm}
+			\textbf{PROYECTO FINAL} \\
+			\vspace{0.3cm}
+			\textbf{SEMESTRE 2026 - 2}
+		}
+	\end{minipage}
+	\hfill
+	\begin{minipage}{0.15\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{UNAM_INGENIERIA}
+	\end{minipage}
+	
+	\vspace{1.5cm}
+	
+	% --- Institutional Divider ---
+\begin{tikzpicture}
+	\draw[unamgold, line width=1.5pt] (0,0) -- (0.3\textwidth,0);
+	\draw[unamblue, line width=1.5pt] (0.3\textwidth,0) -- (0.99\textwidth,0); % Changed \textwidth to 0.99
+\end{tikzpicture}
+	
+	\vspace{2cm}
+	
+	% --- Practice Title ---
+	{\color{black}\fontsize{18}{20}\selectfont
+		\textbf{\MakeUppercase{\tituloPractica}} \\
+		\vspace{0.6cm}
+		\textbf{\MakeUppercase{\nombrePractica}}
+	}
+	
+	\vspace{2cm}
+	
+	% --- Team Information ---
+	{\color{black}\fontsize{13}{15}\selectfont
+		\renewcommand{\arraystretch}{1.5} % Spacing for the table
+		\begin{tabular}{l l}
+			\textbf{INTEGRANTES:}    & Díaz Antúnez David \\
+			                         & Hernández Acosta Mauricio Gabriel \\
+			                         & Pérez Olvera Alexis Abraham \\
+			                         & Trejo Olvera Emmanuel \\
+			\textbf{PROFESOR:}       & Abraham Pérez Alonzo \\
+			\textbf{GRUPO:}          & 01 \\
+			\textbf{FECHA DE ENTREGA:} & \fechaEntrega
+		\end{tabular}
+	}
+	
+	\vfill
+	
+	% --- Footer ---
+	{\color{black}\fontsize{11}{13}\selectfont
+		\textbf{Ciudad Universitaria, CDMX} \hfill \textbf{\fechaEntrega}
+	}
+\end{center}
+
+\newpage

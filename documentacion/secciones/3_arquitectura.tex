@@ -1,0 +1,37 @@
+\section{Arquitectura Digital Propuesta (RTL)}
+
+Para garantizar la concurrencia real y aprovechar la paralelización física de la FPGA, el sistema de riego se divide en módulos jerárquicos independientes. Todos los bloques se sincronizan mediante una señal de reloj maestro de 50 MHz ($CLK_{\text{sys}}$) y una señal de reset global asíncrona y activa en alto.
+
+El Cuadro~\ref{fig:diagrama_bloques_rtl} representa la distribución espacial y las conexiones del diseño a nivel de transferencia de registros (RTL).
+
+\placeholderfigure{Diagrama de Bloques General del Sistema RTL en la FPGA Cyclone V.}{figures/diagrama_bloques_rtl.png}
+\label{fig:diagrama_bloques_rtl}
+
+\subsection{Descripción de Módulos RTL}
+
+\subsubsection{1. SPI Master (\texttt{spi\_master.vhd})}
+Implementa el protocolo maestro serie síncrono. Genera la señal de reloj serial (\textit{SCLK}) mediante un divisor de reloj por hardware para operar a una velocidad de transmisión de 1 MHz. Es responsable de transmitir 24 bits (comandos de inicio, configuración de canal y lectura) al convertidor analógico-digital MCP3008 y capturar la respuesta de 10 bits transmitida a través del bus de datos \textit{MISO}.
+
+\subsubsection{2. ADC Controller (\texttt{adc\_controller.vhd})}
+Funciona como una máquina de estados de nivel medio que coordina al \texttt{spi\_master}. Realiza de manera secuencial la lectura de los tres canales del ADC (Canal 0: Humedad, Canal 1: Temperatura, Canal 2: Radiación UV) cada 10 ms (según lo definido por el parámetro \texttt{ADC\_SAMPLE\_PERIOD}). Al recibir el pulso de fin de lectura (\textit{done}) del bus SPI, almacena las lecturas en registros de datos dedicados y genera un pulso de validez de datos (\textit{data\_ready}).
+
+\subsubsection{3. Threshold Comparator (\texttt{threshold\_comparator.vhd})}
+Módulo netamente combinacional y de registros simples que compara los valores digitales de los sensores recibidos de la entidad anterior con umbrales configurables vía constantes genéricas (\textit{generics}). Implementa:
+\begin{itemize}
+	\item \textbf{Umbrales de Humedad:} Determina si el suelo está seco (\texttt{humedad\_baja}) o húmedo.
+	\item \textbf{Umbrales de Temperatura:} Activa una alarma cuando la temperatura excede el valor configurado (\texttt{temp\_alta}).
+	\item \textbf{Umbrales de Radiación UV:} Evalúa si la radiación solar es muy alta (\texttt{uv\_extrema}) para optimizar el riego.
+\end{itemize}
+
+\subsubsection{4. PWM Controller (\texttt{pwm\_controller.vhd})}
+Generador de modulación por ancho de pulso para el servomotor. Genera una señal digital a una frecuencia exacta de 50 Hz. Implementa internamente contadores que regulan el ancho de pulso en un rango de 1 ms a 2 ms, y añade un módulo de barrido progresivo para transicionar suavemente entre las posiciones de apertura y cierre de la compuerta térmica de ventilación.
+
+\subsubsection{5. FSM Central (\texttt{fsm\_central.vhd})}
+El cerebro del sistema de control. Recibe los estados de alarma de los sensores y determina la secuencia de estados lógicos para activar o desactivar la bomba de agua local y mandar las órdenes de apertura al servomotor de ventilación.
+
+\subsection{El Concepto de Señales ``Strobe'' (Eventos) e Histéresis}
+Para evitar problemas de metaestabilidad o de carreras críticas en el paso de información entre los controladores lentos de periféricos (que operan en el dominio de los Hz o kHz) y la máquina de estados principal (que corre a 50 MHz):
+\begin{itemize}
+	\item \textbf{Señales Strobe:} Las señales de activación e indicadores de datos no son niveles continuos inestables. En su lugar, se diseñan circuitos que generan un pulso de **un único ciclo de reloj de sistema (20 ns)** cuando se detecta un flanco de cambio de estado. Esto permite a la FSM central registrar eventos instantáneos de forma síncrona sin bloquearse.
+	\item \textbf{Histéresis en Comparadores:} Las alarmas de los sensores no oscilan ante variaciones de ruido analógico gracias a que el módulo \texttt{threshold\_comparator} cuenta con ventanas de comparación de doble umbral (histéresis). Por ejemplo, la alarma de temperatura se enciende al sobrepasar los 25°C y se apaga únicamente cuando la lectura desciende por debajo de los 20°C.
+\end{itemize}

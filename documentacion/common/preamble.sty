@@ -1,0 +1,106 @@
+\ProvidesPackage{common/preamble}
+
+% --- 1. Core Configuration (Language & Fonts) ---
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\RequirePackage[spanish,es-noshorthands]{babel}
+\spanishdecimal{.}
+
+% Fonts: Fira Sans for prose, Fira Mono for code
+\usepackage[sfdefault]{FiraSans} 
+\usepackage{FiraMono}
+\usepackage{type1cm}
+% Note: Removed lmodern as it conflicts with FiraSans
+
+% --- 2. Page Layout & Headers ---
+\usepackage[top=2.0cm, bottom=2.0cm, left=2.0cm, right=2.0cm]{geometry}
+\usepackage{fancyhdr}
+\usepackage{setspace}
+\setlength{\parindent}{0in}
+\usepackage{tocloft}
+
+% --- 3. Mathematics & Science ---
+\RequirePackage{amsmath}
+\RequirePackage{graphicx}
+\RequirePackage{tikz}
+\RequirePackage{enumitem}
+\RequirePackage{siunitx}
+\RequirePackage{amsmath}
+\RequirePackage{mathtools, amsfonts, amssymb}
+\usepackage{siunitx}
+\usepackage{tikz}
+\usepackage{circuitikz} % Essential for your circuits lab
+
+% --- 4. Graphics & Tables ---
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{multirow, multicol, booktabs, array}
+\usepackage{subcaption}
+\usepackage{epstopdf}
+\usepackage{pdfpages}
+\usepackage{fancybox}
+\RequirePackage{pgfplots}
+\usetikzlibrary{arrows.meta}
+\pgfplotsset{compat=1.18}
+
+% --- 5. Colors & Styling ---
+\usepackage{xcolor}
+\usepackage[normalem]{ulem}
+\usepackage{tcolorbox}
+\usepackage{hyperref}
+\hypersetup{colorlinks=false, pdfborder={0 0 0}}
+
+% UNAM Institutional Colors
+\definecolor{unamblue}{RGB}{0,51,102}
+\definecolor{unamgold}{RGB}{153,126,48}
+\definecolor{myred}{HTML}{911010}
+
+% --- 6. Code Snippets (Listings) ---
+\usepackage{listings}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{bashstyle}{
+	backgroundcolor=\color{backcolour},
+	basicstyle=\ttfamily\small,
+	numbers=left,
+	numberstyle=\tiny\color{gray},
+	frame=single,
+	breaklines=true,
+	morekeywords={sudo, apt, git, cd, ls, chmod},
+	literate={_}{{\textunderscore}}1 {{$}}{{\textdollar}}1
+}
+
+\lstdefinestyle{sqlstyle}{
+	language=SQL,
+	basicstyle=\ttfamily\small,
+	keywordstyle=\color{blue},
+	commentstyle=\color{green!60!black},
+	stringstyle=\color{red},
+	numbers=left,
+	numberstyle=\tiny,
+	frame=single,
+	breaklines=true,
+	literate={á}{{\'a}}1 {é}{{\'e}}1 {í}{{\'i}}1 {ó}{{\'o}}1 {ú}{{\'u}}1 {ñ}{{\~n}}1
+}
+
+% Highlight command
+\newtcbox{\highlight}[1][]{%
+	nobeforeafter, tcbox raise base, arc=3pt, boxrule=0pt,
+	colback=yellow!20!white, colframe=white, #1
+}
+\graphicspath{{common/}{figures/}{imagenes/}}
+
+% Define \placeholder 
+\newcommand{\placeholderfigure}[2]{
+	\begin{figure}[htbp]
+		\centering
+		\fbox{
+			\parbox{0.85\linewidth}{
+				\centering
+				#1\\[6pt]
+				\texttt{\detokenize{#2}}
+			}
+		}
+		\caption{#1}
+	\end{figure}
+}

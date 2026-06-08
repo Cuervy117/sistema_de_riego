@@ -1,0 +1,36 @@
+\section{Diseño de la FSM Central}
+
+La máquina de estados central (\texttt{fsm\_central}) coordina y decide las acciones que toma el sistema de riego automático basándose en los eventos de los sensores. Es una máquina de tipo Moore síncrona con lógica secuencial controlada por el reloj de 50 MHz.
+
+El Cuadro~\ref{fig:diagrama_fsm} representa el flujo y las condiciones de transición entre los diferentes estados de la FSM.
+
+\placeholderfigure{Diagrama de Transición de Estados (FSM) de Control Central.}{figures/diagrama_fsm.png}
+\label{fig:diagrama_fsm}
+
+\subsection{Descripción de Estados de la Máquina}
+
+\begin{enumerate}
+	\item \textbf{\texttt{ST\_IDLE} (Reposo):}
+	Estado de inicio tras la liberación de la señal de reset. Mantiene apagados todos los actuadores (bomba = \texttt{'0'}) y sitúa la compuerta de ventilación en posición cerrada. Limpia los contadores de tiempo en hardware y realiza la transición automática al estado de monitoreo.
+	
+	\item \textbf{\texttt{ST\_MONITOR} (Monitoreo Activo):}
+	Estado en el cual la FSM se encuentra latente a la espera de condiciones críticas de control ambiental:
+	\begin{itemize}
+		\item Transición a \textbf{\texttt{ST\_RIEGO}}: Si se reporta que la tierra está seca (\texttt{humedad\_baja = '1'}) **y además** la radiación solar no es extrema (\texttt{uv\_extrema = '0'}). Esto último previene la evaporación instantánea del agua de riego.
+		\item Transición a \textbf{\texttt{ST\_VENTILACION}}: Si se reporta que el entorno sufre de sobrecalentamiento (\texttt{temp\_alta = '1'}), priorizando la aclimatación del cultivo.
+	\end{itemize}
+	
+	\item \textbf{\texttt{ST\_RIEGO} (Control Hidráulico):}
+	Enciende la bomba sumergible local y abre la electroválvula del sistema. La máquina permanecerá en este estado hasta que se cumpla una de las siguientes dos condiciones:
+	\begin{itemize}
+		\item Que la humedad del suelo vuelva a un rango seguro (\texttt{humedad\_baja = '0'}).
+		\item Que transcurra el tiempo de seguridad máximo de riego (\textit{timeout} de 10 segundos) para evitar inundaciones o daño de la bomba sumergible en caso de fallo físico del sensor.
+	\end{itemize}
+	Una vez finalizado el riego, la FSM se desplaza al estado de seguridad \texttt{ST\_COOLDOWN}.
+
+	\item \textbf{\texttt{ST\_VENTILACION} (Control Térmico de la Compuerta):}
+	Indica al módulo \texttt{pwm\_controller} abrir la compuerta de ventilación activando la señal \texttt{gate\_open = '1'}, permitiendo que el servomotor realice el barrido mecánico. Permanece en este estado hasta que la temperatura baje del umbral establecido con la histéresis (\texttt{temp\_alta = '0'}). Al estabilizarse la temperatura, retorna al estado de seguridad \texttt{ST\_COOLDOWN}.
+
+	\item \textbf{\texttt{ST\_COOLDOWN} (Espera de Seguridad / Histéresis Temporal):}
+	Introduce un retardo de tiempo muerto controlado de 5 segundos tras un proceso de riego o ventilación. Durante esta espera, no se permite volver a activar la bomba ni mover el servo. Esta histéresis temporal protege a los actuadores mecánicos e hidráulicos de oscilaciones causadas por ruido en las lecturas de los sensores analógicos. Transcurrido el cooldown, retorna a \texttt{ST\_MONITOR}.
+\end{enumerate}

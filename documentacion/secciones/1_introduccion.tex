@@ -1,0 +1,29 @@
+\section{Introducción y Descripción del Proyecto}
+
+El objetivo de este proyecto es diseñar e implementar un sistema de control embebido en hardware para la automatización del riego y aclimatación de un cultivo menor utilizando lógica digital pura (FSM) sobre una FPGA Intel/Altera Cyclone V. A diferencia de los enfoques tradicionales basados en microcontroladores, el diseño basado en FPGA aprovecha la concurrencia real del hardware, lo que permite un procesamiento paralelo, determinista y seguro de las variables ambientales y los actuadores.
+
+El sistema de control procesa en tiempo real variables como la humedad del suelo, la temperatura ambiental y la radiación ultravioleta (UV), determinando de forma automática y paralela la activación de diversos periféricos de salida hidráulicos y mecánicos.
+
+\subsection{Componentes del Sistema}
+El sistema se compone de los elementos descritos en el Cuadro~\ref{tab:componentes_sistema}.
+
+\begin{table}[H]
+	\centering
+	\caption{Componentes de hardware del sistema de riego automático.}
+	\label{tab:componentes_sistema}
+	\renewcommand{\arraystretch}{1.3}
+	\begin{tabular}{@{} l p{5cm} p{8cm} @{}}
+		\toprule
+		\textbf{Categoría} & \textbf{Componente} & \textbf{Función Principal} \\
+		\midrule
+		\textbf{Entrada} & Sensor de Humedad (Sustrato) & Mide el estrés hídrico de la tierra mediante resistencia/conductancia. \\
+		& Sensor de Temperatura (TMP235) & Monitorea las condiciones térmicas para activar la ventilación en caso de estrés térmico. \\
+		& Sensor de Radiación UV (ALS-PT19) & Evalúa la radiación solar para suspender el riego en horas de calor extremo, reduciendo la evaporación. \\
+		\midrule
+		\textbf{Control} & FPGA Cyclone V (DE1-SoC) & Procesa concurrentemente los protocolos SPI, decodificación analógica y la máquina de estados principal. \\
+		\midrule
+		\textbf{Salida} & Bomba de Agua Sumergible & Presuriza la red de micro-riego local de forma temporizada. \\
+		& Servomotor / Compuerta & Actúa como compuerta de ventilación controlada por PWM, abriéndose dinámicamente cuando la temperatura sube. \\
+		\bottomrule
+	\end{tabular}
+\end{table}

@@ -1,0 +1,28 @@
+\documentclass[12pt]{article}
+\usepackage{common/preamble}
+
+% Definition of variables for the cover page
+\newcommand{\tituloPractica}{Proyecto Final}
+\newcommand{\nombrePractica}{Sistema de Riego Automático en FPGA}
+\newcommand{\fechaEntrega}{8 de Junio de 2026}
+
+\begin{document}
+
+% Include the cover page
+\include{common/portada}
+
+% Table of Contents
+\tableofcontents
+\newpage
+
+% Include all sections
+\input{secciones/1_introduccion}
+\input{secciones/2_analisis_critico}
+\input{secciones/3_arquitectura}
+\input{secciones/4_fsm_central}
+\input{secciones/5_verificacion_resultados}
+
+% Include bibliography
+\input{common/bibliografia}
+
+\end{document}
