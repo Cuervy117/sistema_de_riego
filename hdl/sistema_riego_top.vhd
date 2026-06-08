@@ -15,8 +15,8 @@ entity sistema_riego_top is
         TH_TEMP_HOT       : integer := 250;
         TH_TEMP_COOL      : integer := 200;
         
-        TH_UV_HIGH        : integer := 600;
-        TH_UV_NORMAL      : integer := 450;
+        TH_UV_HIGH        : integer := 350; -- Adjusted for cell phone flashlight activation indoors
+        TH_UV_NORMAL      : integer := 320; -- Adjusted for cell phone flashlight deactivation indoors
         
         -- Timeouts
         TIMEOUT_RIEGO_S   : integer := 10;
